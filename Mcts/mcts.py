@@ -1,4 +1,5 @@
 import random
+import hashlib
 
 
 class State:
@@ -12,6 +13,12 @@ class State:
         self.turns = turns
         self.moves = moves
         print(self.moves)
+
+    def __hash__(self):
+        return hash(str(self.moves))
+
+    def __eq__(self, other):
+        return hash(self) == hash(other)
 
     def next_state(self):
         next_move = random.choice([x * self.turns for x in self.MOVES])
@@ -39,14 +46,22 @@ class TreeNode:
         self.reward += reward
         self.visit_count += 1
 
-    def fully_eapand(self):
+    def fully_expand(self):
         if len(self.children) == len(State.MOVES):
             return True
         return False
+
+
+def expend(node):
+    tried_children = set([c.state for c in node.children])
+    new_state = node.state.next_state()
+    while new_state not in tried_children:
+        new_state = node.state.next_state()
+    node.add_child(new_state)
+    return node.children[-1]
 
 
 if __name__ == '__main__':
     a = State()
     while not a.over():
         a = a.next_state()
-    print(a.value)
