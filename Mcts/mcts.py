@@ -24,9 +24,25 @@ class State:
 
 
 class TreeNode:
-    def __init__(self):
+    def __init__(self, state, parent=None):
         self.children = {}
         self.visit_count = 0
+        self.reward = 0.0
+        self.children = []
+        self.parent = parent
+
+    def add_child(self, child_state):
+        child = TreeNode(child_state, self)
+        self.children.append(child)
+
+    def update(self, reward):
+        self.reward += reward
+        self.visit_count += 1
+
+    def fully_eapand(self):
+        if len(self.children) == len(State.MOVES):
+            return True
+        return False
 
 
 if __name__ == '__main__':
