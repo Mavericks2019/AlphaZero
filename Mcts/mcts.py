@@ -76,7 +76,7 @@ def best_child_uct(node):
             best = score
         if len(res) == 0:
             print("no best child, please check")
-        return random.choice(res)
+    return random.choice(res)
 
 
 if __name__ == '__main__':
