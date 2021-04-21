@@ -6,6 +6,7 @@ from math import log
 class State:
     TURNS = 10
     MOVES = [2, -2, 3, -3]
+    GOAL = 0
 
     def __init__(self, value=0, moves=None, turns=TURNS):
         if not moves:
@@ -30,9 +31,13 @@ class State:
             return True
         return False
 
+    def reward(self):
+        return self.value - self.GOAL
+
 
 class TreeNode:
     def __init__(self, state, parent=None):
+        self.state = state
         self.children = {}
         self.visit_count = 0
         self.reward = 0.0
@@ -51,6 +56,18 @@ class TreeNode:
         if len(self.children) == len(State.MOVES):
             return True
         return False
+
+
+def tree_policy(node):
+    while not node.state.over():
+        if len(node.children) == 0:
+            return expend(node)
+        elif random.uniform(0, 1) < 0.5:
+            return best_child_uct(node)
+        elif node.fully_expand():
+            return best_child_uct(node)
+        else:
+            return expend(node)
 
 
 def expend(node):
@@ -79,7 +96,20 @@ def best_child_uct(node):
     return random.choice(res)
 
 
+def default_policy(state):
+    while not state.over():
+        state = state.next_state()
+        print(state.moves)
+    return state.reward()
+
+
+def backup(node, reward):
+    while node is not None:
+        node.visit_count += 1
+        node.reward += reward
+        node = node.parent
+
+
 if __name__ == '__main__':
     a = State()
-    while not a.over():
-        a = a.next_state()
+    print(default_policy(a))
