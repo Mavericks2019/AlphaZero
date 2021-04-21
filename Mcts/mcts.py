@@ -1,5 +1,6 @@
 import random
-import hashlib
+from math import sqrt
+from math import log
 
 
 class State:
@@ -59,6 +60,23 @@ def expend(node):
         new_state = node.state.next_state()
     node.add_child(new_state)
     return node.children[-1]
+
+
+def best_child_uct(node):
+    best = 0.0
+    res = []
+    for child in node.children:
+        exploit = child.reward / child.visit_count
+        explore = sqrt(2.0 * log(node.visit_count) / float(child.visit_count))
+        score = exploit + explore
+        if score == best:
+            res.append(child)
+        if score > best:
+            res = [child]
+            best = score
+        if len(res) == 0:
+            print("no best child, please check")
+        return random.choice(res)
 
 
 if __name__ == '__main__':
