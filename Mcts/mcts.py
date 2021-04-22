@@ -1,6 +1,8 @@
 import random
+from graphviz import Digraph
 from math import sqrt
 from math import log
+from queue import Queue
 
 
 class State:
@@ -108,6 +110,22 @@ def backup(node, reward):
         node.visit_count += 1
         node.reward += reward
         node = node.parent
+
+
+def show_tree(root):
+    dot = Digraph(comment="MCTS")
+    q = Queue()
+    q.put(root)
+    while not q.empty():
+        curr = q.get()
+        dot.node(curr.state.node_id(), curr.state.node_info())
+        if curr != root:
+            dot.edge(curr.parent.state.node_id(), curr.state.node_id())
+        for n in curr.children:
+            q.put(n)
+    with open("MCTS.dot", "w", encoding="utf-8") as w:
+        w.write(dot.source)
+    dot.render("serach_path", view=False)
 
 
 if __name__ == '__main__':
