@@ -34,7 +34,13 @@ class State:
         return False
 
     def reward(self):
-        return self.value - self.GOAL
+        return abs(self.value - self.GOAL)
+
+    def node_id(self):
+        return str(self)
+
+    def node_info(self):
+        return str(self)
 
 
 class TreeNode:
@@ -60,6 +66,17 @@ class TreeNode:
         return False
 
 
+def uct_serach(budget, mct_tree_root):
+    for i in range(int(budget)):
+        if i % 10000 == 9999:
+            print(f"simulation:{i}")
+            print(mct_tree_root)
+        front = tree_policy(mct_tree_root)
+        reward = default_policy(front.state)
+        backup(front, reward)
+    return best_child_uct(mct_tree_root)
+
+
 def tree_policy(node):
     while not node.state.over():
         if len(node.children) == 0:
@@ -75,7 +92,7 @@ def tree_policy(node):
 def expend(node):
     tried_children = set([c.state for c in node.children])
     new_state = node.state.next_state()
-    while new_state not in tried_children:
+    while new_state in tried_children:
         new_state = node.state.next_state()
     node.add_child(new_state)
     return node.children[-1]
@@ -93,15 +110,14 @@ def best_child_uct(node):
         if score > best:
             res = [child]
             best = score
-        if len(res) == 0:
-            print("no best child, please check")
+    if len(res) == 0:
+        print("no best child, please check")
     return random.choice(res)
 
 
 def default_policy(state):
     while not state.over():
         state = state.next_state()
-        print(state.moves)
     return state.reward()
 
 
@@ -128,6 +144,17 @@ def show_tree(root):
     dot.render("serach_path", view=False)
 
 
+def main():
+    level = 1
+    num_sim = 500
+    curr = TreeNode(State())
+    for le in range(level):
+        curr = uct_serach(num_sim/(level + 1), curr)
+    root = curr
+    while root.parent:
+        root = root.parent
+    show_tree(root)
+
+
 if __name__ == '__main__':
-    a = State()
-    print(default_policy(a))
+    main()
