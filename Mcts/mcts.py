@@ -37,10 +37,7 @@ class State:
         return abs(self.value - self.GOAL)
 
     def node_id(self):
-        return str(self)
-
-    def node_info(self):
-        return str(self)
+        return str(hash(self))
 
 
 class TreeNode:
@@ -64,6 +61,9 @@ class TreeNode:
         if len(self.children) == len(State.MOVES):
             return True
         return False
+
+    def node_info(self):
+        return f"Node; children:{len(self.children)};visit_count:{self.visit_count};reward:{self.reward}"
 
 
 def uct_serach(budget, mct_tree_root):
@@ -134,7 +134,7 @@ def show_tree(root):
     q.put(root)
     while not q.empty():
         curr = q.get()
-        dot.node(curr.state.node_id(), curr.state.node_info())
+        dot.node(curr.state.node_id(), curr.node_info())
         if curr != root:
             dot.edge(curr.parent.state.node_id(), curr.state.node_id())
         for n in curr.children:
