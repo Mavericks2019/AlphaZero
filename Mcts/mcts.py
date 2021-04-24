@@ -6,7 +6,7 @@ from queue import Queue
 
 
 class State:
-    TURNS = 10
+    TURNS = 4
     MOVES = [2, -2, 3, -3]
     GOAL = 0
 
@@ -16,6 +16,7 @@ class State:
         self.value = value
         self.turns = turns
         self.moves = moves
+        self.MAX_VALUE = 3.0 * (self.TURNS - 1) * self.TURNS / 2
         print(self.moves)
 
     def __hash__(self):
@@ -34,7 +35,7 @@ class State:
         return False
 
     def reward(self):
-        return abs(self.value - self.GOAL)
+        return 1.0 - (abs(self.value - self.GOAL) / self.MAX_VALUE)
 
     def node_id(self):
         return str(hash(self))
@@ -63,7 +64,7 @@ class TreeNode:
         return False
 
     def node_info(self):
-        return f"Node; children:{len(self.children)};visit_count:{self.visit_count};reward:{self.reward}"
+        return f"state:{self.state.moves}\nvisit_count:{self.visit_count}\nreward:{self.reward}"
 
 
 def uct_serach(budget, mct_tree_root):
@@ -145,8 +146,8 @@ def show_tree(root):
 
 
 def main():
-    level = 1
-    num_sim = 500
+    level = 4
+    num_sim = 5000
     curr = TreeNode(State())
     for le in range(level):
         curr = uct_serach(num_sim/(level + 1), curr)
