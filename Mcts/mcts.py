@@ -17,7 +17,7 @@ class State:
         self.turns = turns
         self.moves = moves
         self.MAX_VALUE = 3.0 * (self.TURNS - 1) * self.TURNS / 2
-        print(self.moves)
+        # print(self.moves)
 
     def __hash__(self):
         return hash(str(self.moves))
@@ -83,15 +83,17 @@ def tree_policy(node):
         if len(node.children) == 0:
             return expend(node)
         elif random.uniform(0, 1) < 0.5:
-            return best_child_uct(node)
-        elif node.fully_expand():
-            return best_child_uct(node)
+            node = best_child_uct(node)
         else:
-            return expend(node)
+            if not node.fully_expand():
+                return expend(node)
+            else:
+                node = best_child_uct(node)
+        return node
 
 
 def expend(node):
-    tried_children = set([c.state for c in node.children])
+    tried_children = [c.state for c in node.children]
     new_state = node.state.next_state()
     while new_state in tried_children:
         new_state = node.state.next_state()
@@ -99,13 +101,13 @@ def expend(node):
     return node.children[-1]
 
 
-def best_child_uct(node):
+def best_child_uct(node, alpha=0.2):
     best = 0.0
     res = []
     for child in node.children:
         exploit = child.reward / child.visit_count
         explore = sqrt(2.0 * log(node.visit_count) / float(child.visit_count))
-        score = exploit + explore
+        score = exploit + explore * alpha
         if score == best:
             res.append(child)
         if score > best:
@@ -147,7 +149,7 @@ def show_tree(root):
 
 def main():
     level = 4
-    num_sim = 5000
+    num_sim = 50000
     curr = TreeNode(State())
     for le in range(level):
         curr = uct_serach(num_sim/(level + 1), curr)
