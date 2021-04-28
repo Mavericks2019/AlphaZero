@@ -1,7 +1,7 @@
-from graphics import GraphWin
-from graphics import Line
-from graphics import Point
-from graphics import GraphicsObject
+from common_tools.graphics import GraphWin
+from common_tools.graphics import Line
+from common_tools.graphics import Point
+from common_tools.graphics import GraphicsObject
 
 GRID_WIDTH = 40
 COLUMN = 15
