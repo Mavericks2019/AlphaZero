@@ -1,8 +1,11 @@
 from common_tools.shapes import windows
+from common_tools.shapes import GRID_WIDTH
+from common_tools.graphics import Point
+from common_tools.graphics import Circle
 
 
 class Board:
-    def __init__(self, width=15, height=15, n=5):
+    def __init__(self, width=15, height=15, n=5, show_board=True):
         self.width = width
         self.height = height
         self.n = n
@@ -10,6 +13,9 @@ class Board:
         self.players = [1, 1]  # 1:black 0:white
         self.current_player = 1
         self.availables = set([i for i in range(width * height)])
+        self.show_board = show_board
+        if show_board:
+            self.window = windows(width, height)
 
     def show_board(self):
         return windows(self.width, self.height)
@@ -79,6 +85,20 @@ class Board:
             return True, -1
         return False, -1
 
+    def human_plear_move(self):
+        pos = self.window.getMouse()
+        x = round((pos.getX()) / GRID_WIDTH)
+        y = round((pos.getY()) / GRID_WIDTH)
+        if x == 0 or y == 0:
+            return
+        piece = Circle(Point(GRID_WIDTH * x, GRID_WIDTH * y), 16)
+        if self.current_player == 1:
+            piece.setFill('black')
+        else:
+            piece.setFill('white')
+        self.current_player = -self.current_player
+        piece.draw(self.window)
+
     def move(self, move):
         self.states[move] = self.current_player
         self.availables.remove(move)
@@ -101,3 +121,9 @@ class HumanPlayer:
 
     def move(self, board):
         pass
+
+
+if __name__ == '__main__':
+    board = Board()
+    while True:
+        board.human_plear_move()
