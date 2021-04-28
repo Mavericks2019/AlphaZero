@@ -1,4 +1,4 @@
-from common_tools.test import windows
+from common_tools.shapes import windows
 
 
 class Board:
@@ -84,3 +84,20 @@ class Board:
         self.availables.remove(move)
         self.current_player = -self.current_player
 
+
+class Game:
+    def __init__(self, board, player1, player2):
+        self.board = board
+        self.player1 = player1
+        self.player2 = player2
+
+    def start(self):
+        pass
+
+
+class HumanPlayer:
+    def __init__(self, id):
+        self.id = id
+
+    def move(self, board):
+        pass
