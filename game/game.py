@@ -91,15 +91,19 @@ class Board:
         y = round((pos.getY()) / GRID_WIDTH)
         if x == 0 or y == 0:
             return
+
+        move = self.location_to_move([x, y])
+        if self.states.get(move):
+            return
         piece = Circle(Point(GRID_WIDTH * x, GRID_WIDTH * y), 16)
         if self.current_player == 1:
             piece.setFill('black')
         else:
             piece.setFill('white')
-        self.current_player = -self.current_player
         piece.draw(self.window)
+        self.change_state(move)
 
-    def move(self, move):
+    def change_state(self, move):
         self.states[move] = self.current_player
         self.availables.remove(move)
         self.current_player = -self.current_player
@@ -127,3 +131,5 @@ if __name__ == '__main__':
     board = Board()
     while True:
         board.human_plear_move()
+        if board.has_a_winner()[0]:
+            break
