@@ -1,7 +1,7 @@
 from graphics import GraphWin
 from graphics import Line
 from graphics import Point
-
+from graphics import GraphicsObject
 
 GRID_WIDTH = 40
 COLUMN = 15
